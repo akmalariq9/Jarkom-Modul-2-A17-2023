@@ -668,18 +668,85 @@ lynx www.rjp.baratayuda.abimanyu.a17.com:14400
 Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
 
 ## **Penyelesaian Soal Nomor 18**
-    
+Untuk menyelesaikan nomor 18, langkah pertama yang diperlukan adakah memasukkan _username_ dan _password_ ke file `.htacces` dengan _syntax_ `htpasswd -b -c /etc/apache2/.htpasswd Wayang baratayudaa17`. Kemudian dilakukan kongfigurasi pada file `/etc/apache2/sites-available/rjp.baratayuda.abimanyu.a17.com.conf` sesuai code _berikut_:
+
+```bash
+<VirtualHost *:14000 *:14400>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/rjp.baratayuda.abimanyu.a17
+    ServerName www.rjp.baratayuda.abimanyu.a17.com
+    ServerAlias rjp.baratayuda.abimanyu.a17.com
+
+    <Directory "/var/www/rjp.baratayuda.abimanyu.a17">
+        AuthType Basic
+        AuthName "Restricted Content"
+        AuthUserFile /etc/apache2/.htpasswd
+        Require valid-user
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+```
+
+Untuk melakukan _testing_ dapat dilakukan dengan melakukan lynx menuju _domain_ tersebut. Sebelum menampilkan halaman, maka _user_ harus memasukkan autentikasi terlebih dahulu seperti pada gambar berikut:
+
+![image-18-1](https://cdn.discordapp.com/attachments/1150687865420906517/1163756324518109184/Screenshot_1087.png?ex=6540bb89&is=652e4689&hm=86e5b6682471e4afc3d2c2fb1f396fbfd2645f937d912bb6488772bb117a2ac8&)
+
+![image-19-2](https://cdn.discordapp.com/attachments/1150687865420906517/1163758184951988224/Screenshot_1089.png?ex=6540bd44&is=652e4844&hm=af45e63f0fd57931f37539d456c6848d748dd2162465e1693571a4eed3d894f2&)
+
 ## **Soal Nomor 19**
 Buatlah agar setiap kali mengakses IP dari Abimanyu akan secara otomatis dialihkan ke www.abimanyu.yyy.com (alias)
 
 ## **Penyelesaian Soal Nomor 19** 
-    
+Untuk menyelesaikan soal nomor 19 hanya perlu menambahkan `ServerAlias 192.177.3.3` yang merupakan IP dari Abimanyu didalam _file_ `/etc/apache2/sites-available/abimanyu.a17.com.conf` sehingga menjadi seperti berikut:
+
+```bash
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/abimanyu.a17
+        ServerName abimanyu.a17.com
+        ServerAlias www.abimanyu.a17.com
+        ServerAlias 192.177.3.3
+
+        <Directory /var/www/abimanyu.a17>
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^(.*)$ index.php/$1 [L]
+        </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+```
+
+Untuk melakukan pengecekan, maka dapat dilakukan _lynx_ ke IP dari Abimanyu. Setelah dilakukan test, hasilnya adalah sebagai berikut:
+
+![image9](https://cdn.discordapp.com/attachments/1150687865420906517/1163761525526380555/Screenshot_1090.png?ex=6540c061&is=652e4b61&hm=43a2469044968e44e03dd084215e6bfe83858ae630ca5057f9f2cacc77e91cc3&)
+
 ## **Soal Nomor 20**
 Karena website www.parikesit.abimanyu.yyy.com semakin banyak pengunjung dan banyak gambar gambar random, maka ubahlah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.
 
 ## **Penyelesaian Soal Nomor 20**
+Untuk menyelesaikan soal nomor 20 dapat dilakukan dengan merubah file `/var/www/parikesit.abimanyu.a17/.htaccess` sehingga menjadi seperti ini:
+
+```bash
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/images/abimanyu.png
+RewriteCond %{REQUEST_URI} abimanyu
+RewriteRule \.(jpg|jpeg|png)$ /public/images/abimanyu.png [L]
+```
+Untuk melakukan _testing_, dapat dilakukan akses ke _webserver_ menuju `abimanyu.a17.com/abimanyu.jpg` sehingga akan muncul tampilan seperti gambar berikut:
+
+![image-20-1](https://cdn.discordapp.com/attachments/1150687865420906517/1163763405165965402/Screenshot_1091.png?ex=6540c221&is=652e4d21&hm=2e2c000b624b0877dc552f3c06f2f777ffd75eb13ab7a1c1285276ee458956ea&)
+
+![image-20-2](https://cdn.discordapp.com/attachments/1150687865420906517/1163763405711229039/Screenshot_1092.png?ex=6540c221&is=652e4d21&hm=cfd3fb707349398b58535d8f9d4b6f5c2b3c83949037bcbd59a2589d8bda772f&)
 
 # **Kendala Saat Pengerjaan**
+
+- Website DNS tidak bisa diakses dengan jaringan tertentu, seperti wifi kos. Hal tersebut menghambat pengerjaan karena koneksi dari hotspot tidak selalu stabil
+- Terdapat beberapa masalah yang tidak bisa dikendalikan, misalnya _web console_ yang tidak bisa dibuka, telnet yang sulit tersambung, atau _project_ yang tiba-tiba tertutup. 
 
 # **End of The Line**
 
